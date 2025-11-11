@@ -1,172 +1,670 @@
-<!DOCTYPE html>
+  /* ---------- Моя страничка на гитхаб ---------- */
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>About me</title>
-    <link rel="stylesheet" type="text/css" href="/assets/styles/styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Marcus — Hardware Portfolio</title>
+
+<!--
+  Single-file portfolio:
+  - dark theme
+  - language switch (EN / RU)
+  - top: photo + short description
+  - 20 projects (one per row). Each project has images that cycle on click.
+  - minimal, no external libs, fast on weak devices
+-->
+
+<style>
+  /* ---------- Base & variables (keep colors soft/pleasant) ---------- */
+  :root{
+    --bg:#0d1116;
+    --card:#0f1720;
+    --muted:#9aa6b2;
+    --accent:#7aa2ff;
+    --glass: rgba(255,255,255,0.03);
+    --radius:12px;
+    --gap:18px;
+    --max-width:1000px;
+    --shadow: 0 6px 18px rgba(2,6,23,0.6);
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  /* Basic resets */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--font-sans);
+    background:linear-gradient(180deg,var(--bg),#071018 120%);
+    color:#e6eef6;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.45;
+    padding:32px 18px;
+    display:flex;
+    justify-content:center;
+  }
+
+  /* Page container */
+  .wrap{
+    width:100%;
+    max-width:var(--max-width);
+  }
+
+  /* Header: photo + name + description */
+  header{
+    display:flex;
+    gap:20px;
+    align-items:center;
+    background:var(--glass);
+    border-radius:var(--radius);
+    padding:16px;
+    box-shadow:var(--shadow);
+    margin-bottom:22px;
+  }
+  .avatar{
+    width:200px;
+    height:200px;
+    flex:0 0 200px;
+    border-radius:12px;
+    overflow:hidden;
+    background:linear-gradient(135deg,#0a1522 0%, #112432 100%);
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .head-info{
+    flex:1;
+    min-width:0;
+  }
+  .name-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    justify-content:space-between;
+  }
+  h1{
+    font-size:1.05rem;
+    margin:0;
+    font-weight:600;
+    color:#f6fbff;
+  }
+  .desc{
+    margin-top:6px;
+    color:var(--muted);
+    font-size:0.95rem;
+  }
+
+  /* controls (lang button + social links) */
+  .controls{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-left:12px;
+  }
+  .btn{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    color:var(--muted);
+    padding:8px 10px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:0.92rem;
+    backdrop-filter: blur(4px);
+  }
+  .btn:hover{color:var(--accent);border-color:rgba(122,162,255,0.22)}
+
+  .socials{display:flex;gap:8px}
+  .socials a{color:var(--muted);text-decoration:none;font-size:0.9rem;padding:6px 8px;border-radius:8px}
+  .socials a:hover{color:var(--accent)}
+
+  /* Projects list */
+  .projects{display:flex;flex-direction:column;gap:var(--gap)}
+  .project{
+    display:flex;
+    gap:16px;
+    align-items:center;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;
+    padding:12px;
+    border:1px solid rgba(255,255,255,0.03);
+  }
+
+.proj-media{
+  flex:0 0 330px; /* раньше было 220px */
+  max-width:330px;
+  height:195px;   /* раньше 130px */
+  border-radius:10px;
+  overflow:hidden;
+  background:#08131a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  user-select:none;
+}
+  .proj-media img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .proj-media .hint{
+    position:absolute;
+    bottom:8px;
+    right:8px;
+    font-size:0.78rem;
+    color:rgba(230,238,246,0.9);
+    background:rgba(0,0,0,0.25);
+    padding:4px 8px;
+    border-radius:8px;
+    backdrop-filter: blur(2px);
+  }
+
+  .proj-body{flex:1;min-width:0}
+  .proj-title{font-weight:600;margin:0 0 6px 0}
+  .proj-desc{margin:0;color:var(--muted);font-size:0.95rem}
+
+  /* footer small note */
+  footer{color:var(--muted);font-size:0.88rem;margin-top:18px;text-align:center;padding:12px}
+
+  /* Responsive adjustments */
+  @media (max-width:720px){
+    header{flex-direction:column;align-items:flex-start}
+    .name-row{width:100%;align-items:flex-start}
+    .controls{margin-left:0;margin-top:8px}
+    .project{flex-direction:column;align-items:stretch}
+    .proj-media{width:100%;height:190px;max-width:100%}
+  }
+</style>
 </head>
 <body>
-    <div class="main">
-        <div class="header">
-            <a href="#">
-                <span>EN</span>
-            </a>
-            <span>|</span>
-            <a href="/ru">
-                <span>RU</span>
-            </a>
+  <div class="wrap">
+    <!-- Header -->
+<header>
+  <div class="avatar" aria-hidden="true">
+    <img src="photo.jpg" alt="Photo of Marcus" onerror="this.style.filter='grayscale(40%) contrast(80%)'; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22960%22 height=%22960%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%230d1220%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22%2388a0c7%22 font-family=%22Arial%22>photo.jpg</text></svg>'">
+  </div>
+
+  <div class="head-info">
+    <div class="name-row">
+      <div>
+        <h1 data-i18n="title_en">Marcus — Full-Stack Hardware Engineer</h1>
+        <div class="desc" data-i18n="intro_en">
+          I'm a Full-Stack Hardware Engineer with over a decade of experience bringing electronic products from a simple idea to mass production. My passion is designing sophisticated, high-speed multilayer boards, ensuring they play nicely with electromagnetic compatibility (EMC). Here, you'll find a mix of my open-source passion projects and commercial work, all brought to life with tools like Cadence Allegro and Altium Designer.
         </div>
-        <div class="content">
-            <div class="content__hello">
-                <img class="content__hello-img" src="assets/img/avatar.png" alt="Avatar">
-                <div class="content__hello-text">
-                    <span class="content__name">
-                        <a href="/"> Hey, I'm Sviatoslav.</a>
-                    </span>
-                    <span class="content__description">This is my template <br/> for simple and beauty portfolio</span>
-                    <nav class="content__social">
-                        <a href="#link" target="_blank" class="content__social-item">
-                            <img src="assets/img/icons/twitter.svg" alt="Twitter">
-                            <span>Twitter</span>
-                        </a>
-                        <a href="#link" target="_blank" class="content__social-item">
-                            <img src="assets/img/icons/facebook.svg" alt="Facebook">
-                            <span>Facebook</span>
-                        </a>
-                        <a href="#link" target="_blank" class="content__social-item">
-                            <img src="assets/img/icons/in.svg" alt="LinkedIn">
-                            <span>LinkedIn</span>
-                        </a>
-                        <a href="#link" target="_blank" class="content__social-item">
-                            <img src="assets/img/icons/telegram.svg" alt="Telegram">
-                            <span>Telegram</span>
-                        </a>
-                    </nav>
-                </div>
-            </div>
-            <div class="content__main">
-                <div class="content__main-item">
-                    <div class="main-item__description">
-                        <p>This is the main page with examples of the blocks. You can combine them in the way you want.</p>
-                        <p>Check <a href="/example">the example</a> page to see how these blocks could be combined.</p>
-                    </div>
-                </div>
-                <h1 class="content__about-header">Icons</h1>
-                <div class="content__main-item">
-                    <a href="#" class="content__social-item">
-                        <img src="assets/img/icons/discord.svg" alt="discord">
-                        <img src="assets/img/icons/dribbble.svg" alt="dribbble">
-                        <img src="assets/img/icons/facebook.svg" alt="facebook">
-                        <img src="assets/img/icons/github.svg" alt="github">
-                        <img src="assets/img/icons/in.svg" alt="linkedin">
-                        <img src="assets/img/icons/instagram.svg" alt="instagram">
-                        <img src="assets/img/icons/medium.svg" alt="medium">
-                        <img src="assets/img/icons/skype.svg" alt="skype">
-                        <img src="assets/img/icons/telegram.svg" alt="telegram">
-                        <img src="assets/img/icons/twitch.svg" alt="twitch">
-                        <img src="assets/img/icons/twitter.svg" alt="twitter">
-                        <img src="assets/img/icons/vk.svg" alt="vk">
-                        <img src="assets/img/icons/whatsapp.svg" alt="whatsapp">
-                        <img src="assets/img/icons/youtube.svg" alt="youtube">
-                    </a>
-                </div>
-                <h1 class="content__about-header">Blocks</h1>
-                <h2 class="content__subheader">Text</h2>
-                <div class="content__main-item">
-                    <div class="main-item__description">
-                        <p>I did a huge way to my current point. From my childhood, I've chosen that I will be a developer. Not just developer but Developer. My way is about doing my best. I always try to find out real reasons and try to find the best solution. I'm thinking not only about code and code quality but also about business logic and customer satisfaction.</p>
-                    </div>
-                </div>
-                <div class="content__main-item">
-                    <div class="main-item__description">
-                        <p>Each client that I has was happy to work with me. Almost every second client comes to me after recommendations. I guess it says a lot.</p>
-                    </div>
-                </div>
-                <h2 class="content__subheader">Projects</h2>
-                <div class="content__main-item project">
-                    <a data-fslightbox href="assets/img/project.png">
-                        <img src="assets/img/project.png" alt="project1">
-                    </a>
-                    <div>
-                        <div class="main-item__title">
-                            <a href="/example/project.html"><span>Project 1</span></a>
-                        </div>
-                        <div class="main-item__description">
-                            <p>This project is my diamond. I'm very proud of work that I did there.
-                            This customer found me when project was in almost MVP state. But code quality was not good enough, so I rebuild the whole system and made a strong architecture basement</p>
-                        </div>
-                        <div class="main-item__subdescription">
-                            <p><span>Stack:</span> Vue.js, Laravel, Socket.io</p>
-                            <p class="main-item__links"><a href=""><span>Source Code</span></a><span>|</span><a href=""><span>Preview</span></a> </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="content__main-item project">
-                    <a data-fslightbox href="assets/img/project2.png">
-                        <img src="assets/img/project2.png" alt="project2">
-                    </a>
-                    <div>
-                        <div class="main-item__title">
-                            <a href="/example/project.html"><span>Project 2</span></a>
-                        </div>
-                        <div class="main-item__description">
-                            <p>I worked with this project for 1,5 years.
-                                <br/>I've built the whole system from scratch, and now it's fully working project
-                                with a bunch of happy customers</p>
-                        </div>
-                        <div class="main-item__subdescription">
-                            <p><span>Stack:</span> Nuxt.js, Laravel</p>
-                            <p class="main-item__links"><a href=""><span>Source Code</span></a><span>|</span><a href=""><span>Preview</span></a> </p>
-                        </div>
-                    </div>
-                </div>
-                <h2 class="content__subheader">Posts</h2>
-                <div class="content__main-item post">
-                    <article>
-                        <h2 class="main-item__title">
-                            <a href="#linktopost">A simple thought</a>
-                        </h2>
-                        <p class="main-item__date">Nov 22, 2022</p>
-                        <div class="main-item__description">
-                            <p>Thousands of candles can be lighted from a single candle, and the life of the candle will not be shortened. Happiness never decreases by being shared.</p>
-                        </div>
-                    </article>
-                </div>
-                <div class="content__main-item post">
-                    <article>
-                        <h2 class="main-item__title">
-                            <a href="#linktopost">A simple thought 2</a>
-                        </h2>
-                        <p class="main-item__date">Sep 13, 2022</p>
-                        <div class="main-item__description">
-                            <p>Be more concerned with your character than your reputation, because your character is what you really are, while your reputation is merely what others think you are.</p>
-                        </div>
-                    </article>
-                </div>
-            </div>
+      </div>
+
+      <div class="controls" role="toolbar" aria-label="Controls">
+        <button id="langBtn" class="btn" title="Switch language">EN</button>
+        <div class="socials" aria-hidden="false">
+          <!-- Email -->
+          <a href="mailto:MarcusX777@proton.me" target="_blank" rel="noopener" title="Email">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16v16H4z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="https://www.linkedin.com/in/aydark/" target="_blank" rel="noopener" title="LinkedIn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"></path>
+              <rect x="2" y="9" width="4" height="12"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+          </a>
         </div>
-        <div class="footer">
-            <div>
-                <span>© Sviatoslav Zhilichev</span>
-            </div>
-            <div>
-                <nav class="footer__social">
-                    <a href="#link" target="_blank" class="footer__social-item">
-                        <img src="assets/img/icons/twitter.svg" alt="Twitter">
-                    </a>
-                    <a href="#link" target="_blank" class="footer__social-item">
-                        <img src="assets/img/icons/facebook.svg" alt="Facebook">
-                    </a>
-                    <a href="#link" target="_blank" class="footer__social-item">
-                        <img src="assets/img/icons/in.svg" alt="LinkedIn">
-                    </a>
-                    <a href="#link" target="_blank" class="footer__social-item">
-                        <img src="assets/img/icons/telegram.svg" alt="Telegram">
-                    </a>
-                </nav>
-            </div>
-        </div>
+      </div>
     </div>
-    <script src="assets/scripts/fslightbox.js"></script>
+  </div>
+</header>
+
+    <!-- Projects container -->
+    <main class="projects" id="projects">
+      <!-- We'll create 20 project items. Each has:
+           - data-images attribute: comma-separated image filenames (replace with real)
+           - data-key-title / data-key-desc for i18n keys
+      -->
+      <!-- Template repeated 20 times with unique keys -->
+      <!-- Example for project 1 -->
+      <article class="project" data-images="proj1-1.jpg,proj1-2.jpg,proj1-3.jpg" data-key-title="p1_title" data-key-desc="p1_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj1-1.jpg" alt="Project 1 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p1_title">Open hardware power management board</h3>
+          <p class="proj-desc" data-i18n="p1_desc">A compact power management board with efficient buck/boost stages, designed for low-noise analog systems and fast transient response.</p>
+        </div>
+      </article>
+
+      <!-- Generate remaining projects (2..20) with placeholders -->
+      <!-- Project 2 -->
+      <article class="project" data-images="proj2-1.jpg,proj2-2.jpg" data-key-title="p2_title" data-key-desc="p2_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj2-1.jpg" alt="Project 2 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p2_title">High-speed digital transceiver</h3>
+          <p class="proj-desc" data-i18n="p2_desc">Design and layout of a multi-Gbps transceiver with careful impedance control and ESD protection for industrial equipment.</p>
+        </div>
+      </article>
+
+      <!-- Project 3 -->
+      <article class="project" data-images="proj3-1.jpg" data-key-title="p3_title" data-key-desc="p3_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj3-1.jpg" alt="Project 3 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p3_title">Embedded sensor gateway</h3>
+          <p class="proj-desc" data-i18n="p3_desc">Low-power ESP32-based gateway aggregating remote sensors and forwarding data via MQTT to cloud services.</p>
+        </div>
+      </article>
+
+      <!-- Project 4 -->
+      <article class="project" data-images="proj4-1.jpg,proj4-2.jpg" data-key-title="p4_title" data-key-desc="p4_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj4-1.jpg" alt="Project 4 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p4_title">EMC-hardened motor drive</h3>
+          <p class="proj-desc" data-i18n="p4_desc">Commercial motor controller optimized for EMI, with snubbers and PCB layout techniques to minimize emissions.</p>
+        </div>
+      </article>
+
+      <!-- Project 5 -->
+      <article class="project" data-images="proj5-1.jpg" data-key-title="p5_title" data-key-desc="p5_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj5-1.jpg" alt="Project 5 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p5_title">RF front-end module</h3>
+          <p class="proj-desc" data-i18n="p5_desc">Custom RF front-end with filters and LNA, tuned for operation in crowded ISM bands.</p>
+        </div>
+      </article>
+
+      <!-- Project 6 -->
+      <article class="project" data-images="proj6-1.jpg" data-key-title="p6_title" data-key-desc="p6_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj6-1.jpg" alt="Project 6 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p6_title">Automotive CAN interface</h3>
+          <p class="proj-desc" data-i18n="p6_desc">Ruggedized CAN interface with isolation, for vehicle telemetry and diagnostics.</p>
+        </div>
+      </article>
+
+      <!-- Project 7 -->
+      <article class="project" data-images="proj7-1.jpg" data-key-title="p7_title" data-key-desc="p7_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj7-1.jpg" alt="Project 7 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p7_title">Battery management system</h3>
+          <p class="proj-desc" data-i18n="p7_desc">Smart BMS with cell balancing, SOC estimation, and safe charging algorithms for Li-ion packs.</p>
+        </div>
+      </article>
+
+      <!-- Project 8 -->
+      <article class="project" data-images="proj8-1.jpg" data-key-title="p8_title" data-key-desc="p8_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj8-1.jpg" alt="Project 8 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p8_title">Industrial HMI panel</h3>
+          <p class="proj-desc" data-i18n="p8_desc">Touch HMI with robust UI and persistent settings storage for industrial automation equipment.</p>
+        </div>
+      </article>
+
+      <!-- Project 9 -->
+      <article class="project" data-images="proj9-1.jpg" data-key-title="p9_title" data-key-desc="p9_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj9-1.jpg" alt="Project 9 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p9_title">FPGA evaluation board</h3>
+          <p class="proj-desc" data-i18n="p9_desc">Evaluation board for digital signal processing and prototyping of custom IP cores.</p>
+        </div>
+      </article>
+
+      <!-- Project 10 -->
+      <article class="project" data-images="proj10-1.jpg,proj10-2.jpg" data-key-title="p10_title" data-key-desc="p10_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj10-1.jpg" alt="Project 10 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p10_title">Power supply reference design</h3>
+          <p class="proj-desc" data-i18n="p10_desc">Modular PSU with high efficiency and thermal management for rack systems.</p>
+        </div>
+      </article>
+
+      <!-- Project 11 -->
+      <article class="project" data-images="proj11-1.jpg" data-key-title="p11_title" data-key-desc="p11_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj11-1.jpg" alt="Project 11 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p11_title">USB-C PD power sink</h3>
+          <p class="proj-desc" data-i18n="p11_desc">Compact implementation of USB Power Delivery sink for fast-charging devices.</p>
+        </div>
+      </article>
+
+      <!-- Project 12 -->
+      <article class="project" data-images="proj12-1.jpg" data-key-title="p12_title" data-key-desc="p12_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj12-1.jpg" alt="Project 12 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p12_title">IoT environmental sensor</h3>
+          <p class="proj-desc" data-i18n="p12_desc">Weatherproof sensor node for agriculture telemetry with long-life battery operation.</p>
+        </div>
+      </article>
+
+      <!-- Project 13 -->
+      <article class="project" data-images="proj13-1.jpg" data-key-title="p13_title" data-key-desc="p13_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj13-1.jpg" alt="Project 13 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p13_title">Sensor fusion board</h3>
+          <p class="proj-desc" data-i18n="p13_desc">Combines IMU, magnetometer and GPS for precise positioning and orientation tasks.</p>
+        </div>
+      </article>
+
+      <!-- Project 14 -->
+      <article class="project" data-images="proj14-1.jpg" data-key-title="p14_title" data-key-desc="p14_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj14-1.jpg" alt="Project 14 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p14_title">Wireless charging coil</h3>
+          <p class="proj-desc" data-i18n="p14_desc">Prototype of Qi-compatible wireless power transmitter with tuned coils and shielding.</p>
+        </div>
+      </article>
+
+      <!-- Project 15 -->
+      <article class="project" data-images="proj15-1.jpg" data-key-title="p15_title" data-key-desc="p15_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj15-1.jpg" alt="Project 15 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p15_title">Low-noise audio preamp</h3>
+          <p class="proj-desc" data-i18n="p15_desc">Analog preamplifier with ultra-low noise floor for audio measurement equipment.</p>
+        </div>
+      </article>
+
+      <!-- Project 16 -->
+      <article class="project" data-images="proj16-1.jpg" data-key-title="p16_title" data-key-desc="p16_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj16-1.jpg" alt="Project 16 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p16_title">Test fixture & jig</h3>
+          <p class="proj-desc" data-i18n="p16_desc">Custom test fixture for automated functional testing in production environments.</p>
+        </div>
+      </article>
+
+      <!-- Project 17 -->
+      <article class="project" data-images="proj17-1.jpg" data-key-title="p17_title" data-key-desc="p17_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj17-1.jpg" alt="Project 17 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p17_title">Firmware OTA platform</h3>
+          <p class="proj-desc" data-i18n="p17_desc">Secure OTA system for remote firmware updates with rollback and verification features.</p>
+        </div>
+      </article>
+
+      <!-- Project 18 -->
+      <article class="project" data-images="proj18-1.jpg" data-key-title="p18_title" data-key-desc="p18_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj18-1.jpg" alt="Project 18 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p18_title">Custom connector design</h3>
+          <p class="proj-desc" data-i18n="p18_desc">Mechanical and electrical design of a board-to-board connector with locking mechanism.</p>
+        </div>
+      </article>
+
+      <!-- Project 19 -->
+      <article class="project" data-images="proj19-1.jpg" data-key-title="p19_title" data-key-desc="p19_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj19-1.jpg" alt="Project 19 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p19_title">Thermal simulation case study</h3>
+          <p class="proj-desc" data-i18n="p19_desc">Thermal analysis and PCB modifications to improve heat dissipation in dense assemblies.</p>
+        </div>
+      </article>
+
+      <!-- Project 20 -->
+      <article class="project" data-images="proj20-1.jpg" data-key-title="p20_title" data-key-desc="p20_desc">
+        <div class="proj-media" tabindex="0" role="button" aria-pressed="false" title="Click to change image">
+          <img src="proj20-1.jpg" alt="Project 20 image">
+          <div class="hint" data-i18n="img_hint">click image</div>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title" data-i18n="p20_title">Manufacturing documentation</h3>
+          <p class="proj-desc" data-i18n="p20_desc">Complete set of fab files, pick-and-place, and BOM optimizations for cost-effective production.</p>
+        </div>
+      </article>
+    </main>
+
+    <footer>
+      <div data-i18n="footer_note">Made with care — replace placeholders with your images and links.</div>
+    </footer>
+  </div>
+
+<script>
+/* ----------------------
+   Minimal JS: i18n and image cycling
+   - translations object contains English and Russian texts
+   - each element with data-i18n attribute will be replaced
+   - projects: each .project has data-images (comma list), clicking .proj-media cycles images
+   ---------------------- */
+
+(function(){
+  // TRANSLATIONS: keys used in HTML data-i18n or data-key-title/data-key-desc
+  // Keep translations short and clear (add/change as needed)
+  const T = {
+    en: {
+      title_en: "Marcus — Full-Stack Hardware Engineer",
+      intro_en: "I'm a Full-Stack Hardware Engineer with over a decade of experience bringing electronic products from a simple idea to mass production. My passion is designing sophisticated, high-speed multilayer boards, ensuring they play nicely with electromagnetic compatibility (EMC). Here, you'll find a mix of my open-source passion projects and commercial work, all brought to life with tools like Cadence Allegro and Altium Designer.",
+      img_hint: "click image",
+      footer_note: "Made with care — replace placeholders with your images and links.",
+      // project titles and descriptions (20)
+      p1_title: "Open hardware power management board",
+      p1_desc: "A compact power management board with efficient buck/boost stages, designed for low-noise analog systems and fast transient response.",
+      p2_title: "High-speed digital transceiver",
+      p2_desc: "Design and layout of a multi-Gbps transceiver with careful impedance control and ESD protection for industrial equipment.",
+      p3_title: "Embedded sensor gateway",
+      p3_desc: "Low-power ESP32-based gateway aggregating remote sensors and forwarding data via MQTT to cloud services.",
+      p4_title: "EMC-hardened motor drive",
+      p4_desc: "Commercial motor controller optimized for EMI, with snubbers and PCB layout techniques to minimize emissions.",
+      p5_title: "RF front-end module",
+      p5_desc: "Custom RF front-end with filters and LNA, tuned for operation in crowded ISM bands.",
+      p6_title: "Automotive CAN interface",
+      p6_desc: "Ruggedized CAN interface with isolation, for vehicle telemetry and diagnostics.",
+      p7_title: "Battery management system",
+      p7_desc: "Smart BMS with cell balancing, SOC estimation, and safe charging algorithms for Li-ion packs.",
+      p8_title: "Industrial HMI panel",
+      p8_desc: "Touch HMI with robust UI and persistent settings storage for industrial automation equipment.",
+      p9_title: "FPGA evaluation board",
+      p9_desc: "Evaluation board for digital signal processing and prototyping of custom IP cores.",
+      p10_title: "Power supply reference design",
+      p10_desc: "Modular PSU with high efficiency and thermal management for rack systems.",
+      p11_title: "USB-C PD power sink",
+      p11_desc: "Compact implementation of USB Power Delivery sink for fast-charging devices.",
+      p12_title: "IoT environmental sensor",
+      p12_desc: "Weatherproof sensor node for agriculture telemetry with long-life battery operation.",
+      p13_title: "Sensor fusion board",
+      p13_desc: "Combines IMU, magnetometer and GPS for precise positioning and orientation tasks.",
+      p14_title: "Wireless charging coil",
+      p14_desc: "Prototype of Qi-compatible wireless power transmitter with tuned coils and shielding.",
+      p15_title: "Low-noise audio preamp",
+      p15_desc: "Analog preamplifier with ultra-low noise floor for audio measurement equipment.",
+      p16_title: "Test fixture & jig",
+      p16_desc: "Custom test fixture for automated functional testing in production environments.",
+      p17_title: "Firmware OTA platform",
+      p17_desc: "Secure OTA system for remote firmware updates with rollback and verification features.",
+      p18_title: "Custom connector design",
+      p18_desc: "Mechanical and electrical design of a board-to-board connector with locking mechanism.",
+      p19_title: "Thermal simulation case study",
+      p19_desc: "Thermal analysis and PCB modifications to improve heat dissipation in dense assemblies.",
+      p20_title: "Manufacturing documentation",
+      p20_desc: "Complete set of fab files, pick-and-place, and BOM optimizations for cost-effective production."
+    },
+    ru: {
+      title_en: "Marcus — Full-Stack Hardware Engineer",
+      intro_en: "Я — инженер аппаратного обеспечения с более чем десятилетним опытом: от идеи до серийного производства. Люблю проектировать многослойные высокоскоростные платы и заботиться о совместимости по ЭМС. На этой странице — смесь open-source проектов и коммерческих работ, сделанных в Cadence Allegro и Altium Designer.",
+      img_hint: "нажмите на изображение",
+      footer_note: "Сделано аккуратно — замените заглушки на свои изображения и ссылки.",
+      p1_title: "Плата управления питанием (open hardware)",
+      p1_desc: "Компактная плата управления питанием с эффективными buck/boost преобразователями, для низкошумных аналоговых систем.",
+      p2_title: "Высокоскоростной трансивер",
+      p2_desc: "Проект и разводка многогигабитного трансивера с контролем импеданса и защитой от ESD для промышленной техники.",
+      p3_title: "Шлюз датчиков (embedded)",
+      p3_desc: "Энергоэффективный шлюз на ESP32 для сбора данных с сенсоров и отправки по MQTT в облако.",
+      p4_title: "Драйвер двигателя (EMC-усиленный)",
+      p4_desc: "Коммерческий драйвер мотора с мерами по снижению EMI: снабберы и оптимизированная разводка.",
+      p5_title: "RF фронт-энд модуль",
+      p5_desc: "Кастомный RF модуль с фильтрами и усилителем низкого шума, настроенный для ISM-диапазонов.",
+      p6_title: "Автомобильный CAN-интерфейс",
+      p6_desc: "Усиленный CAN-интерфейс с изоляцией для телеметрии и диагностики в автомобиле.",
+      p7_title: "Система управления батареей (BMS)",
+      p7_desc: "Интеллектуальная BMS с балансировкой, оценкой SOC и безопасной стратегией зарядки Li-ion.",
+      p8_title: "Панель HMI для промышленности",
+      p8_desc: "Сенсорная панель с надежным интерфейсом и сохранением настроек для автоматизации.",
+      p9_title: "Eval-плата для FPGA",
+      p9_desc: "Плата для прототипирования цифровой обработки сигналов и разработки IP-ядер.",
+      p10_title: "Опорный блок питания",
+      p10_desc: "Модульный БП с высокой эффективностью и управлением теплом для стоечных систем.",
+      p11_title: "USB-C PD приемник",
+      p11_desc: "Компактная реализация USB Power Delivery sink для быстрой зарядки устройств.",
+      p12_title: "IoT датчик окружающей среды",
+      p12_desc: "Влагозащищённый узел для агротехнической телеметрии с долгой работой от батареи.",
+      p13_title: "Плата sensor fusion",
+      p13_desc: "Комбинация IMU, магнитометра и GPS для точного определения положения и ориентации.",
+      p14_title: "Катушка беспроводной зарядки",
+      p14_desc: "Прототип передатчика мощности Qi с настроенными катушками и экранованием.",
+      p15_title: "Низкошумный аудио предусилитель",
+      p15_desc: "Аналоговый предусилитель с очень низким уровнем шума для измерительной аппаратуры.",
+      p16_title: "Фиксатор для тестирования",
+      p16_desc: "Пользовательский тестовый джиг для автоматизированных функциональных тестов в производстве.",
+      p17_title: "Платформа OTA для прошивок",
+      p17_desc: "Безопасная OTA-система с откатом и проверкой целостности для удалённых обновлений.",
+      p18_title: "Кастомный разъём",
+      p18_desc: "Механическая и электрическая разработка межплатного разъёма с фиксацией.",
+      p19_title: "Тепловая симуляция",
+      p19_desc: "Анализ теплопередачи и изменения PCB для улучшения рассеивания тепла в плотных сборках.",
+      p20_title: "Документация для производства",
+      p20_desc: "Полный набор fab-файлов, pick-and-place и оптимизация BOM для экономичного производства."
+    }
+  };
+
+  // --- i18n: apply translations to elements with data-i18n attributes ---
+  let currentLang = 'en'; // default
+  const applyTranslations = (lang) => {
+    currentLang = lang;
+    // generic keys: find elements with data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      if(!key) return;
+      // prefer exact key in chosen lang; fallback to English key if missing
+      const text = (T[lang] && T[lang][key]) || (T['en'] && T['en'][key]) || el.textContent;
+      el.textContent = text;
+    });
+
+    // Project titles/descriptions: some elements use data-key-title / data-key-desc
+    document.querySelectorAll('.project').forEach(pr=>{
+      const keyTitle = pr.getAttribute('data-key-title');
+      const keyDesc  = pr.getAttribute('data-key-desc');
+      if(keyTitle){
+        const el = pr.querySelector('.proj-title');
+        if(el) el.textContent = (T[lang][keyTitle] || T['en'][keyTitle] || el.textContent);
+      }
+      if(keyDesc){
+        const el2 = pr.querySelector('.proj-desc');
+        if(el2) el2.textContent = (T[lang][keyDesc] || T['en'][keyDesc] || el2.textContent);
+      }
+    });
+
+    // update lang button label
+    const lb = document.getElementById('langBtn');
+    if(lb) lb.textContent = (lang === 'en') ? 'EN ▾' : 'RU ▾';
+  };
+
+  // initial apply
+  applyTranslations(currentLang);
+
+  // language button toggles
+  const langBtn = document.getElementById('langBtn');
+  langBtn.addEventListener('click', ()=>{
+    const next = (currentLang === 'en') ? 'ru' : 'en';
+    applyTranslations(next);
+  });
+
+  // --- Image cycling logic ---
+  // Each .project has data-images = "img1.jpg,img2.jpg,..."
+  document.querySelectorAll('.project').forEach(proj=>{
+    const media = proj.querySelector('.proj-media');
+    const img = proj.querySelector('img');
+    if(!media || !img) return;
+
+    // parse images list (trim spaces)
+    const images = (proj.dataset.images || '').split(',').map(s=>s.trim()).filter(Boolean);
+    let idx = 0;
+
+    // function to set current image src (with basic fallback if missing)
+    const setImage = (i) => {
+      if(images.length === 0) return;
+      idx = ((i % images.length) + images.length) % images.length;
+      img.src = images[idx];
+      img.alt = proj.querySelector('.proj-title')?.textContent + ' image ' + (idx+1);
+      // aria-pressed for accessibility (visual not changing, but semantic)
+      media.setAttribute('aria-pressed', 'false');
+    };
+
+    // click or Enter/Space to advance
+    const advance = () => {
+      setImage(idx + 1);
+    };
+    media.addEventListener('click', advance);
+    media.addEventListener('keydown', (ev)=>{
+      if(ev.key === 'Enter' || ev.key === ' '){
+        ev.preventDefault();
+        advance();
+      }
+    });
+
+    // initial set (in case first file is missing — browser will try)
+    setImage(0);
+  });
+
+  // optional: improve perceived speed on slow devices by deferring heavy tasks
+  // here we don't load extra libs — keep it tiny.
+
+})();
+</script>
 </body>
 </html>
